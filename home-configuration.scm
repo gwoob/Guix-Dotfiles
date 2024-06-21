@@ -19,7 +19,6 @@
 					   "river"
 					   "bemenu"
 					   "librewolf"
-					   "fish"
                                            "foot"
                                            "emacs-pgtk"
 					   "xdg-user-dirs"
