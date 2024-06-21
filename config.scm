@@ -9,18 +9,15 @@
 
 ;; Indicate which modules to import to access the variables
 ;; used in this configuration.
-
-
-;; Import nonfree linux module.
 (use-modules (gnu)
-             (gnu packages shells)
-             (gnu packages gl)
              (nongnu packages linux)
-             (nongnu system linux-initrd))
+             (nongnu system linux-initrd)
+             (gnu packages gl))
 
 (use-service-modules cups desktop networking ssh xorg)
 
 (operating-system
+  (kernel-arguments '("modprobe.blacklist=nouveau"))
   (kernel linux)
   (initrd microcode-initrd)
   (firmware (list linux-firmware))
@@ -34,6 +31,7 @@
                   (name "ben")
                   (comment "Benjamin Carpenter")
                   (group "users")
+                  (file-append fish "/bin/fish")
                   (home-directory "/home/ben")
                   (supplementary-groups '("wheel" "netdev" "audio" "video")))
                 %base-user-accounts))
@@ -41,26 +39,28 @@
   ;; Packages installed system-wide.  Users can also install packages
   ;; under their own account: use 'guix search KEYWORD' to search
   ;; for packages and 'guix install PACKAGE' to install a package.
-  (packages (append (list zsh mesa (specification->package "nss-certs"))
+  (packages (append (list (specification->package (list "mesa"
+                                                        "fish")))
                     %base-packages))
 
   ;; Below is the list of system services.  To search for available
   ;; services, run 'guix system search KEYWORD' in a terminal.
   (services
-   (append (list (service gnome-desktop-service-type)
-                 (set-xorg-configuration
-                  (xorg-configuration (keyboard-layout keyboard-layout))))
+   (append (list (service network-manager-service-type)
+                 (service wpa-supplicant-service-type)
+                 (service ntp-service-type)
+                 (service elogind-service-type))
 
            ;; This is the default list of services we
            ;; are appending to.
-           %desktop-services))
+           %base-services))
   (bootloader (bootloader-configuration
                 (bootloader grub-efi-bootloader)
                 (targets (list "/efi"))
                 (keyboard-layout keyboard-layout)))
   (mapped-devices (list (mapped-device
                           (source (uuid
-                                   "7c189efe-924e-44cf-8ec4-e843cef13e6b"))
+                                   "cac4da52-02e1-48dd-aed0-327b7de6f43a"))
                           (target "cryptroot")
                           (type luks-device-mapping))))
 
@@ -74,6 +74,6 @@
                          (dependencies mapped-devices))
                        (file-system
                          (mount-point "/efi")
-                         (device (uuid "9F97-9BB0"
+                         (device (uuid "7625-ABBA"
                                        'fat32))
                          (type "vfat")) %base-file-systems)))
