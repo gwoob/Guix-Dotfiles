@@ -12,7 +12,8 @@
 (use-modules (gnu)
              (nongnu packages linux)
              (nongnu system linux-initrd)
-             (gnu packages gl))
+             (gnu packages gl)
+             (gnu packages shells))
 
 (use-service-modules cups desktop networking ssh xorg)
 
@@ -31,7 +32,7 @@
                   (name "ben")
                   (comment "Benjamin Carpenter")
                   (group "users")
-                  (file-append fish "/bin/fish")
+                  (shell (file-append fish "/bin/fish"))
                   (home-directory "/home/ben")
                   (supplementary-groups '("wheel" "netdev" "audio" "video")))
                 %base-user-accounts))
@@ -39,8 +40,8 @@
   ;; Packages installed system-wide.  Users can also install packages
   ;; under their own account: use 'guix search KEYWORD' to search
   ;; for packages and 'guix install PACKAGE' to install a package.
-  (packages (append (list (specification->package (list "mesa"
-                                                        "fish")))
+  (packages (append (list (specification->package "mesa")
+                          (specification->package "fish"))
                     %base-packages))
 
   ;; Below is the list of system services.  To search for available
