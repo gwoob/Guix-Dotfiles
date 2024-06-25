@@ -1,0 +1,14 @@
+  (use-package auto-sudoedit
+    :ensure t)
+  (auto-sudoedit-mode 1)
+
+
+  (require 'tramp)
+(setq tramp-remote-path
+      (append tramp-remote-path
+              '(tramp-own-remote-path)))
+(setq tramp-remote-path
+      (append tramp-remote-path
+              '("~/.guix-profile/bin" "~/.guix-profile/sbin"
+                "/run/current-system/profile/bin"
+"/run/current-system/profile/sbin")))
