@@ -22,7 +22,7 @@
 (operating-system
   (kernel linux)
   (initrd microcode-initrd)
-  (firmware (list linux-firmware))
+  (firmware (list linux-firmware sof-firmware))
   (locale "en_US.utf8")
   (timezone "America/Los_Angeles")
   (keyboard-layout (keyboard-layout "us"))
@@ -32,6 +32,7 @@
   (users (cons* (user-account
                   (name "ben")
                   (comment "Benjamin Carpenter")
+		  (shell (file-append zsh "/bin/zsh"))
                   (group "users")
                   (home-directory "/home/ben")
                   (supplementary-groups '("wheel" "netdev" "audio" "video")))
@@ -40,7 +41,7 @@
   ;; Packages installed system-wide.  Users can also install packages
   ;; under their own account: use 'guix search KEYWORD' to search
   ;; for packages and 'guix install PACKAGE' to install a package.
-  (packages (append (list (specification->package "mesa"))
+  (packages (append (list mesa)
                     %base-packages))
 
   ;; Below is the list of system services.  To search for available
@@ -80,7 +81,7 @@
   (swap-devices
    (list
     (swap-space
-     (target "/swap_file")
+     (target "/swapfile")
      (dependencies (filter (file-system-mount-point-predicate "/")
 			   file-systems)))))
 
