@@ -10,19 +10,33 @@
              (guix gexp)
 	     (gnu home services desktop)
              (gnu home services shells)
-	     (gnu home services sound))
+	     (gnu home services sound)
+	     (gnu packages xdisorg)
+	     (gnu packages zig-xyz)
+	     (gnu packages librewolf)
+	     (gnu packages terminals)
+	     (gnu packages emacs)
+	     (gnu packages freedesktop)
+	     (gnu packages pulseaudio)
+	     (gnu packages fonts)
+	     (gnu packages wm)
+	     (gnu packages shells))
 
 (home-environment
   ;; Below is the list of packages that will show up in your
   ;; Home profile, under ~/.guix-home/profile.
- (packages (specifications->packages (list "wl-clipboard"
-					   "river"
-					   "bemenu"
-					   "librewolf"
-                                           "foot"
-                                           "emacs-pgtk"
-					   "xdg-user-dirs"
-					   "pavucontrol")))
+ (packages (list zsh
+		 wl-clipboard
+		 river
+		 bemenu
+		 librewolf
+		 foot
+		 emacs-next-pgtk
+		 xdg-user-dirs
+		 pavucontrol
+		 font-fira-code
+		 sandbar
+		 fzf))
 
   ;; Below is the list of Home services.  To search for available
   ;; services, run 'guix home search KEYWORD' in a terminal.
