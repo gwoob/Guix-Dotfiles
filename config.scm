@@ -10,10 +10,12 @@
 ;; Indicate which modules to import to access the variables
 ;; used in this configuration.
 (use-modules (gnu)
+             (gnu packages linux)
              (nongnu packages linux)
              (nongnu system linux-initrd)
              (gnu packages gl)
-             (gnu packages shells))
+             (gnu packages shells)
+             (guix utils))
 
 (use-service-modules cups desktop networking ssh xorg)
 
@@ -32,7 +34,6 @@
                   (name "ben")
                   (comment "Benjamin Carpenter")
                   (group "users")
-                  (shell (file-append fish "/bin/fish"))
                   (home-directory "/home/ben")
                   (supplementary-groups '("wheel" "netdev" "audio" "video")))
                 %base-user-accounts))
@@ -40,8 +41,7 @@
   ;; Packages installed system-wide.  Users can also install packages
   ;; under their own account: use 'guix search KEYWORD' to search
   ;; for packages and 'guix install PACKAGE' to install a package.
-  (packages (append (list (specification->package "mesa")
-                          (specification->package "fish"))
+  (packages (append (list (specification->package "mesa"))
                     %base-packages))
 
   ;; Below is the list of system services.  To search for available
@@ -77,4 +77,15 @@
                          (mount-point "/efi")
                          (device (uuid "7625-ABBA"
                                        'fat32))
-                         (type "vfat")) %base-file-systems)))
+                         (type "vfat")) %base-file-systems))
+  (swap-devices
+   (list
+    (swap-space
+     (target "/swapfile")
+     (dependencies (filter (file-system-mount-point-predicate "/")
+			   file-systems)))))
+
+  (kernel-arguments
+   (cons* "resume=/dev/mapper/cryptroot"        ;device that holds /swapfile
+          "resume_offset=1212909"  ;offset of /swapfile on device
+          %default-kernel-arguments)))
