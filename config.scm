@@ -20,7 +20,6 @@
 (use-service-modules cups desktop networking ssh xorg)
 
 (operating-system
-  (kernel-arguments '("modprobe.blacklist=nouveau"))
   (kernel linux)
   (initrd microcode-initrd)
   (firmware (list linux-firmware))
@@ -81,11 +80,16 @@
   (swap-devices
    (list
     (swap-space
-     (target "/swapfile")
+     (target "/swap_file")
      (dependencies (filter (file-system-mount-point-predicate "/")
 			   file-systems)))))
 
   (kernel-arguments
-   (cons* "resume=/dev/mapper/cryptroot"        ;device that holds /swapfile
-          "resume_offset=1212909"  ;offset of /swapfile on device
-          %default-kernel-arguments)))
+  (cons* "resume=/dev/mapper/cryptroot"        ;device that holds /swapfile
+         "resume_offset=1212909"  ;offset of /swapfile on device
+	 "modprobe.blacklist=nouveau"
+	 "nowatchdog"
+	 "modprobe.blacklist=iTCO_wdt"
+	 "modprobe.blacklist=sp5100_tco"
+	 "amd_pstate=active"
+         %default-kernel-arguments)))
