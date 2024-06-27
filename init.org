@@ -1,0 +1,331 @@
+# -*- after-save-hook: (org-babel-tangle); before-save-hook: (delete-trailing-whitespace)-*-
+#+PROPERTY: header-args:emacs-lisp :exports code :results none :tangle init.el
+#+TITLE: My init.el Configuration in Org-mode
+#+AUTHOR: Benjamin Carpenter
+
+* Background Color
+
+#+BEGIN_SRC emacs-lisp
+
+  (load-theme 'modus-operandi-tinted)
+  ;;  (setq default-frame-alist '((background-color . "honeydew1")))
+
+#+END_SRC
+
+* Misc.
+
+#+BEGIN_SRC emacs-lisp
+
+  (delete-selection-mode 1)
+  (setq blink-cursor-mode nil)
+  (column-number-mode 1)
+  (save-place-mode 1)
+
+#+END_SRC
+
+* Remove Visual Clutter
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq inhibit-startup-screen t)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+
+#+END_SRC
+
+* Melpa
+
+#+BEGIN_SRC emacs-lisp
+
+  (require 'package)
+  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+  (package-initialize)
+
+#+END_SRC
+
+* Upgrade Built-In Packages
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq package-install-upgrade-built-in t)
+
+#+END_SRC
+
+* Make Emacs Less Messy
+
+** Disable Backups And Auto-Saves
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq make-backup-files nil)
+  (setq auto-save-default nil)
+
+#+END_SRC
+
+** Keep Customizations Outside Of init.el
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
+#+END_SRC
+
+** no-littering
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package no-littering
+    :ensure t)
+
+#+END_SRC
+
+** Move Lock Files
+
+#+BEGIN_SRC emacs-lisp
+
+  (let ((dir (no-littering-expand-var-file-name "lock-files/")))
+    (make-directory dir t)
+    (setq lock-file-name-transforms `((".*" ,dir t))))
+
+#+END_SRC
+
+* Smooth Scrolling
+
+#+BEGIN_SRC emacs-lisp
+
+  (pixel-scroll-precision-mode 1)
+  (setq pixel-scroll-precision-use-momentum t)
+  (setq scroll-conservatively 101)
+  (setq scroll-step 1)
+
+#+END_SRC
+
+* Relative Line Numbers
+
+#+BEGIN_SRC emacs-lisp
+
+  (global-display-line-numbers-mode 1)
+  (setq display-line-numbers-type 'relative)
+
+#+END_SRC
+
+* Auto-Complete
+
+#+BEGIN_SRC emacs-lisp
+
+  (fido-vertical-mode 1)
+
+#+END_SRC
+
+** which-key
+
+#+BEGIN_SRC emacs-lisp
+
+  ;;  (use-package which-key
+  ;;    :ensure t)
+  (which-key-mode 1)
+
+#+END_SRC
+
+* Packages
+
+** Emacs Dashboard
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package dashboard
+  :ensure t
+  :init
+  (setq initial-buffer-choice (lambda () (get-buffer-create dashboard-buffer-name)))
+  :config
+  (dashboard-setup-startup-hook)
+  :custom
+  (dashboard-center-content t)
+  (dashboard-vertically-center-content t)
+  (dashboard-startupify-list '(dashboard-insert-banner
+                               dashboard-insert-newline
+			       dashboard-insert-init-info
+                               dashboard-insert-newline
+                               dashboard-insert-items)))
+
+#+END_SRC
+
+** Magit
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package magit
+        :ensure t)
+
+#+END_SRC
+
+** Meow
+
+*** Configuration
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package meow
+    :ensure t)
+  (defun meow-setup ()
+    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+    (meow-motion-overwrite-define-key
+     '("j" . meow-next)
+     '("k" . meow-prev)
+     '("<escape>" . ignore))
+    (meow-leader-define-key
+     ;; SPC j/k will run the original command in MOTION state.
+     '("j" . "H-j")
+     '("k" . "H-k")
+     ;; Use SPC (0-9) for digit arguments.
+     '("1" . meow-digit-argument)
+     '("2" . meow-digit-argument)
+     '("3" . meow-digit-argument)
+     '("4" . meow-digit-argument)
+     '("5" . meow-digit-argument)
+     '("6" . meow-digit-argument)
+     '("7" . meow-digit-argument)
+     '("8" . meow-digit-argument)
+     '("9" . meow-digit-argument)
+     '("0" . meow-digit-argument)
+     '("/" . meow-keypad-describe-key)
+     '("?" . meow-cheatsheet))
+    (meow-normal-define-key
+     '("0" . meow-expand-0)
+     '("9" . meow-expand-9)
+     '("8" . meow-expand-8)
+     '("7" . meow-expand-7)
+     '("6" . meow-expand-6)
+     '("5" . meow-expand-5)
+     '("4" . meow-expand-4)
+     '("3" . meow-expand-3)
+     '("2" . meow-expand-2)
+     '("1" . meow-expand-1)
+     '("-" . negative-argument)
+     '(";" . meow-reverse)
+     '("," . meow-inner-of-thing)
+     '("." . meow-bounds-of-thing)
+     '("[" . meow-beginning-of-thing)
+     '("]" . meow-end-of-thing)
+     '("a" . meow-append)
+     '("A" . meow-open-below)
+     '("b" . meow-back-word)
+     '("B" . meow-back-symbol)
+     '("c" . meow-change)
+     '("d" . meow-delete)
+     '("D" . meow-backward-delete)
+     '("e" . meow-next-word)
+     '("E" . meow-next-symbol)
+     '("f" . meow-find)
+     '("g" . meow-cancel-selection)
+     '("G" . meow-grab)
+     '("h" . meow-left)
+     '("H" . meow-left-expand)
+     '("i" . meow-insert)
+     '("I" . meow-open-above)
+     '("j" . meow-next)
+     '("J" . meow-next-expand)
+     '("k" . meow-prev)
+     '("K" . meow-prev-expand)
+     '("l" . meow-right)
+     '("L" . meow-right-expand)
+     '("m" . meow-join)
+     '("n" . meow-search)
+     '("o" . meow-block)
+     '("O" . meow-to-block)
+     '("p" . meow-yank)
+     '("q" . meow-quit)
+     '("Q" . meow-goto-line)
+     '("r" . meow-replace)
+     '("R" . meow-swap-grab)
+     '("s" . meow-kill)
+     '("t" . meow-till)
+     '("u" . meow-undo)
+     '("U" . meow-undo-in-selection)
+     '("v" . meow-visit)
+     '("w" . meow-mark-word)
+     '("W" . meow-mark-symbol)
+     '("x" . meow-line)
+     '("X" . meow-goto-line)
+     '("y" . meow-save)
+     '("Y" . meow-sync-grab)
+     '("z" . meow-pop-selection)
+     '("'" . repeat)
+     '("<escape>" . ignore)))
+  (require 'meow)
+  (meow-setup)
+  (meow-global-mode 1)
+
+  ;; Get rid of line hints (use built-in relative line numbering instead)
+  (setq meow-expand-hint-counts '(line . 0))
+
+#+END_SRC
+
+** Olivetti
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package olivetti
+    :ensure t)
+
+#+END_SRC
+
+** Emacs-everywhere
+
+#+BEGIN_SRC emacs-lisp
+
+    (use-package emacs-everywhere
+      :ensure t)
+
+
+
+    (setq emacs-everywhere-window-focus-command (list "hyprctl" "dispatch" "focuswindow" "address:%w"))
+  (setq emacs-everywhere-app-info-function #'emacs-everywhere--app-info-linux-hyprland)
+
+  (require 'json)
+  (defun emacs-everywhere--app-info-linux-hyprland ()
+    "Return information on the current active window, on a Linux Hyprland session."
+    (let* ((json-string (emacs-everywhere--call "hyprctl" "-j" "activewindow"))
+           (json-object (json-read-from-string json-string))
+           (window-id (cdr (assoc 'address json-object)))
+           (app-name (cdr (assoc 'class json-object)))
+           (window-title (cdr (assoc 'title json-object)))
+           (window-geometry (list (aref (cdr (assoc 'at json-object)) 0)
+                                  (aref (cdr (assoc 'at json-object)) 1)
+                                  (aref (cdr (assoc 'size json-object)) 0)
+                                  (aref (cdr (assoc 'size json-object)) 1))))
+      (make-emacs-everywhere-app
+       :id window-id
+       :class app-name
+       :title window-title
+       :geometry window-geometry)))
+
+#+END_SRC
+
+** Rustic-mode
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package rust-mode
+    :ensure t)
+  (setq global-treesit-mode t)
+
+  (use-package eglot
+    :ensure t
+    :hook (prog-mode . eglot-ensure))
+
+  (use-package auto-sudoedit
+    :ensure t)
+  (auto-sudoedit-mode 1)
+
+  (setq tramp-remote-path
+      (append tramp-remote-path
+              '(tramp-own-remote-path)))
+(setq tramp-remote-path
+      (append tramp-remote-path
+              '("~/.guix-profile/bin" "~/.guix-profile/sbin"
+                "/run/current-system/profile/bin"
+"/run/current-system/profile/sbin")))
+#+END_SRC
